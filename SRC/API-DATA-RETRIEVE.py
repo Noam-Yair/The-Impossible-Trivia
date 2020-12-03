@@ -16,6 +16,15 @@ MOVIE_TABLE_INSERT = """INSERT INTO movies(id,imdb_id,title,original_title,overv
                         VALUES(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)"""
 ACTOR_TABLE_INSERT = """INSERT INTO actors(id,name,popularity,profile_path)
                         VALUES(%s,%s,%s,%s)"""
+MOVIE_ACTORS_TABLE_INSERT = """INSERT INTO movie_actors(movie_id,actor_id,character_name)
+                               VALUES(%s,%s,%s)"""
+GENRES_TABLE_INSERT = """INSERT INTO genres(id,name)
+                         VALUES(%s,%s)"""
+MOVIE_GENRES_TABLE_INSERT = """INSERT INTO movie_genres(movie_id,genre_id)
+                               VALUES(%s,%s)"""
+MAXIMUM_ROW_EXECUTE_MANY = 400
+
+MAXIMUM_MOVIES_PER_COMMIT = 1000
 
 async def download_movie_data(sem, session, movie_id):
     async with sem:
@@ -55,18 +64,20 @@ async def download_data(output_path):
 def get_image_url(image_id):
     if image_id is None:
         return None
-    return f"https://image.tmdb.org/t/p/w1280{image_id}",
+    return f"https://image.tmdb.org/t/p/w1280{image_id}"
 
 async def fill_database(db_server, db_user, db_pass, db_name, output_path):
     db = mysql.connector.connect(host=db_server, user=db_user, password=db_pass, database=db_name)
-    m = 0
-    actors = set()
+    actors_mask = set()
+    genres_mask = set()
+    counter = 0
     with db.cursor() as cur:
         async with aiofiles.open(output_path, "r") as f:
             async for movie_json in f:
+                counter += 1
                 movie_data = json.loads(movie_json)
-                #  m = max(m, len(movie_data["tagline"]))
-                cur.execute(MOVIE_TABLE_INSERT,
+                # Uploading movie data
+                cur.execute(MOVIE_TABLE_INSERT, 
                             (movie_data["id"],
                              movie_data["imdb_id"],
                              movie_data["title"],
@@ -79,16 +90,33 @@ async def fill_database(db_server, db_user, db_pass, db_name, output_path):
                              movie_data["tagline"],
                              movie_data["vote_average"],
                              movie_data["vote_count"]))
+
+                # Uploading genres data
+                movie_genres_mask = set()
+                for genre in movie_data["genres"]:
+                    if genre["id"] not in genres_mask:
+                        cur.execute(GENRES_TABLE_INSERT, (genre["id"], genre["name"]))
+                        genres_mask.add(genre["id"])
+                    if (movie_data["id"], genre["id"]) not in movie_genres_mask:
+                        cur.execute(MOVIE_GENRES_TABLE_INSERT, (movie_data["id"], genre["id"]))
+                        movie_genres_mask.add((movie_data["id"], genre["id"]))
+
+                # Uploading actors data
+                movie_actors_mask = set()
                 for actor in movie_data["credits"]["cast"]:
-                    actors.add((actor["id"], actor["name"], actor["popularity"], get_image_url(actor['profile_path'])))
-        import ipdb;ipdb.set_trace()
-        cur.executemany(ACTOR_TABLE_INSERT, list(actors))
-    #  print(m)
+                    if actor["id"] not in actors_mask:
+                        cur.execute(ACTOR_TABLE_INSERT, ((actor["id"], actor["name"], actor["popularity"], get_image_url(actor['profile_path']))))
+                        actors_mask.add(actor["id"])
+                    if (movie_data["id"], actor["id"]) not in movie_actors_mask:
+                        cur.execute(MOVIE_ACTORS_TABLE_INSERT, ((movie_data["id"], actor["id"], actor["character"])))
+                        movie_actors_mask.add((movie_data["id"], actor["id"]))
+
+                # Need to commit changes every once in a while because if transaction is too large it throws an error
+                if counter % MAXIMUM_MOVIES_PER_COMMIT == 0:
+                    print("Commiting changes..")
+                    db.commit()
     db.commit()
     db.close()
-
-
-
 
 
 async def main(db_server, db_user, db_pass, db_name):

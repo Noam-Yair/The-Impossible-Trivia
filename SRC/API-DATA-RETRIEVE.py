@@ -120,7 +120,7 @@ async def fill_database(db_server, db_user, db_pass, db_name, output_path):
 
 
 async def main(db_server, db_user, db_pass, db_name):
-    #await download_data("output.json")
+    await download_data("output.json")
     await fill_database(db_server, db_user, db_pass, db_name, "output.json")
 
 if __name__ == '__main__':

@@ -5,9 +5,10 @@
     <body>
 	<h1>The Impossible Trivia</h1>
 	<h2>{{question}}</h2>
+        <h3 style="color: {{message_color}}">{{message}}</h3>
 	<form action="/" method="post">
 		<table>
-			<tr><td><input type="submit" name="answer1" value="{{answer1}}" /></td><td><input type="submit" name="answer1" value="{{answer2}}" /></td></tr>
+			<tr><td><input type="submit" name="answer1" value="{{answer1}}" /></td><td><input type="submit" name="answer2" value="{{answer2}}" /></td></tr>
 			<tr><td><input type="submit" name="answer3" value="{{answer3}}" /></td><td><input type="submit" name="answer4" value="{{answer4}}" /></td></tr>
 		</table>
 	</form>

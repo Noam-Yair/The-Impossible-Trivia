@@ -12,19 +12,19 @@ API_URL = "https://api.themoviedb.org/3/discover/movie?page={}&append_to_respons
 MOVIE_DATA_API_URL = "https://api.themoviedb.org/3/movie/{}?append_to_response=images%2Ckeywords%2Ccredits%2Ctrailers%2Crelease_dates&language=en&api_key=d7968a4878331fa01877eaca1a6a24da"
 MAX_CONCURRENT_TASKS = 20
 PAGES_CHUNKS = 40
-MOVIE_TABLE_INSERT = """INSERT INTO movies(id,imdb_id,title,original_title,overview,popularity,poster_path,release_date,status,tagline,vote_average,vote_count)
-                        VALUES(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)"""
-ACTOR_TABLE_INSERT = """INSERT INTO actors(id,name,popularity,profile_path)
-                        VALUES(%s,%s,%s,%s)"""
-MOVIE_ACTORS_TABLE_INSERT = """INSERT INTO movie_actors(movie_id,actor_id,character_name)
-                               VALUES(%s,%s,%s)"""
-GENRES_TABLE_INSERT = """INSERT INTO genres(id,name)
-                         VALUES(%s,%s)"""
+MOVIE_TABLE_INSERT = """INSERT INTO movies(id,imdb_id,title,original_title,overview,runtime,popularity,poster_path,release_date,status,tagline,vote_average,vote_count,rnd_token)
+                        VALUES(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)"""
+ACTOR_TABLE_INSERT = """INSERT INTO actors(id,name,gender,popularity,profile_path,rnd_token)
+                        VALUES(%s,%s,%s,%s,%s,%s)"""
+MOVIE_ACTORS_TABLE_INSERT = """INSERT INTO movie_actors(movie_id,actor_id,character_name,actor_rank)
+                               VALUES(%s,%s,%s,%s)"""
+GENRES_TABLE_INSERT = """INSERT INTO genres(id,name,rnd_token)
+                         VALUES(%s,%s,%s)"""
 MOVIE_GENRES_TABLE_INSERT = """INSERT INTO movie_genres(movie_id,genre_id)
                                VALUES(%s,%s)"""
 MAXIMUM_ROW_EXECUTE_MANY = 400
 
-MAXIMUM_MOVIES_PER_COMMIT = 1000
+MAXIMUM_MOVIES_PER_COMMIT = 500
 
 async def download_movie_data(sem, session, movie_id):
     async with sem:
@@ -71,6 +71,9 @@ async def fill_database(db_server, db_user, db_pass, db_name, output_path):
     actors_mask = set()
     genres_mask = set()
     counter = 0
+    movie_counter = 0
+    actor_counter = 0
+    genre_counter = 0
     with db.cursor() as cur:
         async with aiofiles.open(output_path, "r") as f:
             async for movie_json in f:
@@ -83,20 +86,24 @@ async def fill_database(db_server, db_user, db_pass, db_name, output_path):
                              movie_data["title"],
                              movie_data["original_title"],
                              movie_data["overview"],
+                             movie_data["runtime"],
                              movie_data["popularity"],
                              get_image_url(movie_data['poster_path']),
                              movie_data["release_date"],
                              movie_data["status"],
                              movie_data["tagline"],
                              movie_data["vote_average"],
-                             movie_data["vote_count"]))
+                             movie_data["vote_count"],
+                             movie_counter))
+                movie_counter += 1
 
                 # Uploading genres data
                 movie_genres_mask = set()
                 for genre in movie_data["genres"]:
                     if genre["id"] not in genres_mask:
-                        cur.execute(GENRES_TABLE_INSERT, (genre["id"], genre["name"]))
+                        cur.execute(GENRES_TABLE_INSERT, (genre["id"], genre["name"], genre_counter))
                         genres_mask.add(genre["id"])
+                        genre_counter += 1
                     if (movie_data["id"], genre["id"]) not in movie_genres_mask:
                         cur.execute(MOVIE_GENRES_TABLE_INSERT, (movie_data["id"], genre["id"]))
                         movie_genres_mask.add((movie_data["id"], genre["id"]))
@@ -105,10 +112,11 @@ async def fill_database(db_server, db_user, db_pass, db_name, output_path):
                 movie_actors_mask = set()
                 for actor in movie_data["credits"]["cast"]:
                     if actor["id"] not in actors_mask:
-                        cur.execute(ACTOR_TABLE_INSERT, ((actor["id"], actor["name"], actor["popularity"], get_image_url(actor['profile_path']))))
+                        cur.execute(ACTOR_TABLE_INSERT, ((actor["id"], actor["name"], actor["gender"], actor["popularity"], get_image_url(actor['profile_path']), actor_counter)))
                         actors_mask.add(actor["id"])
+                        actor_counter += 1
                     if (movie_data["id"], actor["id"]) not in movie_actors_mask:
-                        cur.execute(MOVIE_ACTORS_TABLE_INSERT, ((movie_data["id"], actor["id"], actor["character"])))
+                        cur.execute(MOVIE_ACTORS_TABLE_INSERT, ((movie_data["id"], actor["id"], actor["character"], actor["order"])))
                         movie_actors_mask.add((movie_data["id"], actor["id"]))
 
                 # Need to commit changes every once in a while because if transaction is too large it throws an error

@@ -3,10 +3,13 @@
         <link rel="stylesheet" href="{{url_for('static', filename='style.css')}}">
     </head>
     <body>
-        <form action="/search" method="GET">
-            <span>word:</span>
-            <input type="text" name="query" required>
-            <input type="submit" value="search">
-        </form>
+	<h1>The Impossible Trivia</h1>
+	<h2>{{question}}</h2>
+	<form action="/" method="post">
+		<table>
+			<tr><td><input type="submit" name="answer1" value="{{answer1}}" /></td><td><input type="submit" name="answer1" value="{{answer2}}" /></td></tr>
+			<tr><td><input type="submit" name="answer3" value="{{answer3}}" /></td><td><input type="submit" name="answer4" value="{{answer4}}" /></td></tr>
+		</table>
+	</form>
     </body>
 </html>

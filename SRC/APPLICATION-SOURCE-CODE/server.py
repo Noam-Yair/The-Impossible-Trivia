@@ -18,6 +18,7 @@ def connect_to_db():
 def randomly_select_question():
     db = connect_to_db()
     question_data = random.choice(QUESTIONS)(db)
+    db.close()
     options = [
         {"option_indicator": "right", "value": question_data["answer"]}, 
         {"option_indicator": "wrong", "value": question_data["option1"]},

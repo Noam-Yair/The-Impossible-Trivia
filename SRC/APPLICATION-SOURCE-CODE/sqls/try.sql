@@ -1,6 +1,7 @@
 SELECT 
     CONCAT("What is the name of the ", ANY_VALUE(genres.name), " movie", " that the actor ", actors.name, " acted for the first time?") as question,
     title AS answer,
+    ANY_VALUE(actors.profile_path) as img,
     (SELECT title FROM movies WHERE rnd_token = {movie_token1}) as option1,
     (SELECT title FROM movies WHERE rnd_token = {movie_token2}) as option2,
     (SELECT title FROM movies WHERE rnd_token = {movie_token3}) as option3

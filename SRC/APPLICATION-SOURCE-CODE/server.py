@@ -1,30 +1,52 @@
+import random
 from flask import Flask, render_template, request
 import config
 import utils
 import mysql.connector
+from trivia_questions import genre_x_where_y_played_for_the_first_time
 
-db = mysql.connector.connect(host=config.DB_SERVER, user=config.DB_USERNAME, password=config.DB_PASSWORD, database=config.DB_SCHEMA)
 app = Flask(__name__)
 
+QUESTIONS = [genre_x_where_y_played_for_the_first_time]
+TRIVIA_QUESTIONS_COUNT = 20
+RIGHT_ANSWER_POINTS = 10
+WRONG_ANSWER_POINTS = -3
+
+def connect_to_db():
+    return mysql.connector.connect(host=config.DB_SERVER, user=config.DB_USERNAME, password=config.DB_PASSWORD, database=config.DB_SCHEMA)
+
+def randomly_select_question():
+    db = connect_to_db()
+    question_data = random.choice(QUESTIONS)(db)
+    options = [
+        {"option_indicator": "right", "value": question_data["answer"]}, 
+        {"option_indicator": "wrong", "value": question_data["option1"]},
+        {"option_indicator": "wrong", "value": question_data["option2"]},
+        {"option_indicator": "wrong", "value": question_data["option3"]},
+    ]
+    random.shuffle(options)
+    return question_data["question"], question_data["answer"], question_data["img"], options
 
 @app.route('/', methods=['GET', 'POST'])
 def index():
     message = ""
+    score = int(request.form.get("score", 0))
+    questions_count = int(request.form.get("questions_count", 0)) + 1
+    if questions_count >= TRIVIA_QUESTIONS_COUNT:
+        return render_template("done.html", score=score)
     message_color = "black"
     if request.method == "POST":
-        if "answer1" in request.form:
+        if "right" in request.form:
             message = "Right Answer :)"
             message_color = "Green"
+            score += RIGHT_ANSWER_POINTS
         else:
             message = "Wrong Answer :("
             message_color = "Red"
-    d = utils.run_sql_file(db,
-                           "sqls/try.sql",
-                           movie_token1=utils.get_random_movie_token(),
-                           movie_token2=utils.get_random_movie_token(),
-                           movie_token3=utils.get_random_movie_token(),
-                           actor_token=utils.get_random_actor_token())
-    return render_template('index.html', question=d[0], answer1=d[1], answer2=d[2], answer3=d[3], answer4=d[4], message=message, message_color=message_color)
+            score += WRONG_ANSWER_POINTS
+    question, answer, img, options = randomly_select_question()
+    print("Right answer is:", answer)
+    return render_template('index.html', question=question, img=img, options=options, score=score, questions_count=questions_count, message=message, message_color=message_color, trivia_questions_count=TRIVIA_QUESTIONS_COUNT)
 
 
 if __name__ == '__main__':

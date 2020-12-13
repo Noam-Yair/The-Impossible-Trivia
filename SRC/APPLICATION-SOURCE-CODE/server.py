@@ -3,11 +3,11 @@ from flask import Flask, render_template, request
 import config
 import utils
 import mysql.connector
-from trivia_questions import genre_x_where_y_played_for_the_first_time
+from trivia_questions import movie_from_genre_x_where_y_played_for_the_first_time
 
 app = Flask(__name__)
 
-QUESTIONS = [genre_x_where_y_played_for_the_first_time]
+QUESTIONS = [movie_from_genre_x_where_y_played_for_the_first_time]
 TRIVIA_QUESTIONS_COUNT = 20
 RIGHT_ANSWER_POINTS = 10
 WRONG_ANSWER_POINTS = -3

@@ -16,3 +16,19 @@ def movie_from_genre_x_where_y_played_for_the_first_time(db):
         "option3": d[5],
     }
 
+
+def genre_which_actor_x_is_most_identified_with(db):
+    d = utils.run_sql_file(db,
+                           "sqls/genre_which_actor_x_is_most_identified_with.sql",
+                           genre_token1=utils.get_random_genre_token(),
+                           genre_token2=utils.get_random_genre_token(),
+                           genre_token3=utils.get_random_genre_token(),
+                           actor_token=utils.get_random_actor_token())
+    return {
+        "question": d[0],
+        "answer": d[1],
+        "img": d[2],
+        "option1": d[3],
+        "option2": d[4],
+        "option3": d[5],
+    }

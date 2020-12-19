@@ -4,10 +4,11 @@ import config
 import utils
 import mysql.connector
 from trivia_questions import movie_from_genre_x_where_y_played_for_the_first_time
+from trivia_questions import genre_which_actor_x_is_most_identified_with
 
 app = Flask(__name__)
 
-QUESTIONS = [movie_from_genre_x_where_y_played_for_the_first_time]
+QUESTIONS = [movie_from_genre_x_where_y_played_for_the_first_time, genre_which_actor_x_is_most_identified_with]
 TRIVIA_QUESTIONS_COUNT = 20
 RIGHT_ANSWER_POINTS = 10
 WRONG_ANSWER_POINTS = -3
@@ -20,7 +21,7 @@ def randomly_select_question():
     question_data = random.choice(QUESTIONS)(db)
     db.close()
     options = [
-        {"option_indicator": "right", "value": question_data["answer"]}, 
+        {"option_indicator": "right", "value": question_data["answer"]},
         {"option_indicator": "wrong", "value": question_data["option1"]},
         {"option_indicator": "wrong", "value": question_data["option2"]},
         {"option_indicator": "wrong", "value": question_data["option3"]},

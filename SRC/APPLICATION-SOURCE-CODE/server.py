@@ -28,6 +28,10 @@ def randomly_select_question():
     random.shuffle(options)
     return question_data["question"], question_data["answer"], question_data["img"], options
 
+@app.route('/help', methods=['GET', 'POST'])
+def help():
+    return render_template('help.html')
+
 @app.route('/', methods=['GET', 'POST'])
 def index():
     message = ""

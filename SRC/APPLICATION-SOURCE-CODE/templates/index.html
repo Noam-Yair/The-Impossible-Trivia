@@ -6,18 +6,37 @@
     <body>
 	<div>{{questions_count}} out of {{trivia_questions_count}}</div>
 	<h1>The Impossible Trivia - <span class="score">Score: {{score}}</span></h1>
-	<h2>{{question}}</h2>
         <h3 style="color: {{message_color}}">{{message}}</h3>
-	{% if img is not none %}
-	<img width=150px" height="150px" src="{{img}}" />
-	{% endif %}
 	<form action="/" method="post">
 		<table>
-			<tr><td><input type="submit" name="{{options[0]['option_indicator']}}" value="{{options[0]['value']}}" /></td><td><input type="submit" name="{{options[1]['option_indicator']}}" value="{{options[1]['value']}}" /></td></tr>
-			<tr><td><input type="submit" name="{{options[2]['option_indicator']}}" value="{{options[2]['value']}}" /></td><td><input type="submit" name="{{options[3]['option_indicator']}}" value="{{options[3]['value']}}" /></td></tr>
+			<tr><th>{{question}}</th><th>Need help?</th></tr>
+			<tr>
+				<td>
+				<table>
+					{% if img is not none %}
+					<tr>
+						<td colspan="2"><img width=150px" height="150px" src="{{img}}" /></tr>
+					</tr>
+					{% endif %}
+					<tr>
+						<td><input type="submit" class="question_btn" name="{{options[0]['option_indicator']}}" value="{{options[0]['value']}}" /></td>
+						<td><input type="submit" class="question_btn" name="{{options[1]['option_indicator']}}" value="{{options[1]['value']}}" /></td>
+					</tr>
+					<tr>
+						<td><input type="submit" class="question_btn" name="{{options[2]['option_indicator']}}" value="{{options[2]['value']}}" /></td>
+						<td><input type="submit" class="question_btn" name="{{options[3]['option_indicator']}}" value="{{options[3]['value']}}" /></td>
+					</tr>
+					<tr>
+						<input type="hidden" name="score" value="{{score}}" />
+						<input type="hidden" name="questions_count" value="{{questions_count}}" />
+					</tr>
+				</table>
+				</td>
+				<td height="500px">
+					<iframe src="/help"></iframe>
+				</td>
+			</tr>
 		</table>
-		<input type="hidden" name="score" value="{{score}}" />
-		<input type="hidden" name="questions_count" value="{{questions_count}}" />
 	</form>
     </body>
 </html>

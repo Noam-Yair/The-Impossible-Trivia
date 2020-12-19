@@ -16,8 +16,7 @@ WRONG_ANSWER_POINTS = -3
 def connect_to_db():
     return mysql.connector.connect(host=config.DB_SERVER, user=config.DB_USERNAME, password=config.DB_PASSWORD, database=config.DB_SCHEMA)
 
-def randomly_select_question():
-    db = connect_to_db()
+def randomly_select_question(db):
     question_data = random.choice(QUESTIONS)(db)
     db.close()
     options = [
@@ -31,10 +30,22 @@ def randomly_select_question():
 
 @app.route('/help', methods=['GET', 'POST'])
 def help():
-    return render_template('help.html')
+    movies, actors = [], []
+    db = connect_to_db()
+    if request.method == "POST":
+        res = utils.run_sql_file_fetchall(db, "sqls/full_text_search.sql", query=request.form.get("query"))
+        for row in res:
+            if row[0] == "movie":
+                movies.append(row[1])
+            else:
+                actors.append(row[1])
+    db.close()
+    
+    return render_template('help.html', movies=movies, actors=actors, query=request.form.get("query"))
 
 @app.route('/', methods=['GET', 'POST'])
 def index():
+    db = connect_to_db()
     message = ""
     score = int(request.form.get("score", 0))
     questions_count = int(request.form.get("questions_count", 0)) + 1
@@ -50,8 +61,8 @@ def index():
             message = "Wrong Answer :("
             message_color = "Red"
             score += WRONG_ANSWER_POINTS
-    question, answer, img, options = randomly_select_question()
-    print("Right answer is:", answer)
+    question, answer, img, options = randomly_select_question(db)
+    db.close()
     return render_template('index.html', question=question, img=img, options=options, score=score, questions_count=questions_count, message=message, message_color=message_color, trivia_questions_count=TRIVIA_QUESTIONS_COUNT)
 
 

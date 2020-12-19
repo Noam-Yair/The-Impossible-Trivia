@@ -12,6 +12,15 @@ def run_sql_file(db, sql_path, **fmt):
     cur.close()
     return result
 
+def run_sql_file_fetchall(db, sql_path, **fmt):
+    cur = db.cursor()
+    with open(sql_path, "r") as f:
+        cur.execute(f.read().format(**fmt))
+        result = cur.fetchall()
+    cur.close()
+    return result
+
+
 def get_random_actor_token():
     return random.randint(0, NUMBER_OF_ACTORS_IN_DB)
 

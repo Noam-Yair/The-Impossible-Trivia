@@ -29,3 +29,6 @@ def get_random_movie_token():
 
 def get_random_genre_token():
     return random.randint(0, NUMBER_OF_GENRES_IN_DB)
+
+def get_random_gender_token():
+    return random.randint(1, 2)

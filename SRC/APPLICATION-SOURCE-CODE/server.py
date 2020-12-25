@@ -5,10 +5,13 @@ import utils
 import mysql.connector
 from trivia_questions import movie_from_genre_x_where_y_played_for_the_first_time
 from trivia_questions import genre_which_actor_x_is_most_identified_with
+from trivia_questions import avg_movie_runtime
+from trivia_questions import num_of_actors_from_gender_x_who_played_in_lead_roles_in_movie_y
+
 
 app = Flask(__name__)
 
-QUESTIONS = [movie_from_genre_x_where_y_played_for_the_first_time, genre_which_actor_x_is_most_identified_with]
+QUESTIONS = [movie_from_genre_x_where_y_played_for_the_first_time, genre_which_actor_x_is_most_identified_with,num_of_actors_from_gender_x_who_played_in_lead_roles_in_movie_y,avg_movie_runtime]
 TRIVIA_QUESTIONS_COUNT = 20
 RIGHT_ANSWER_POINTS = 10
 WRONG_ANSWER_POINTS = -3

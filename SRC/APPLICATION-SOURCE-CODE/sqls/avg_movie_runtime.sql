@@ -7,7 +7,7 @@ SELECT
     1 as option2,
     2 as option3
 FROM
-(	SELECT AVG(movies.runtime) AS avg_runtime, actors.name as actors_name, 1 as g
+(	SELECT AVG(movies.runtime) AS avg_runtime, actors.name as actors_name
 	FROM movies, actors, movie_actors
 	WHERE (actors.rnd_token={actor_token1}
 	OR actors.rnd_token={actor_token2}

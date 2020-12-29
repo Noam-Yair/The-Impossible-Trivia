@@ -1,4 +1,5 @@
 import random
+import sys
 from flask import Flask, render_template, request
 import config
 import utils
@@ -17,6 +18,8 @@ RIGHT_ANSWER_POINTS = 10
 WRONG_ANSWER_POINTS = -3
 
 def connect_to_db():
+    if (len(sys.argv) > 1):
+	    return mysql.connector.connect(port=int(sys.argv[1]), user=config.DB_USERNAME, password=config.DB_PASSWORD, database=config.DB_SCHEMA)
     return mysql.connector.connect(host=config.DB_SERVER, user=config.DB_USERNAME, password=config.DB_PASSWORD, database=config.DB_SCHEMA)
 
 def randomly_select_question(db):

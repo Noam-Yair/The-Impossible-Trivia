@@ -49,6 +49,25 @@ def avg_movie_runtime(db):
         "option3": d[1]+1,
     }
 
+def which_of_actors_x_y_played_in_movie_with_rating_more_than_z(db):
+    options = [0, 1, 2, 3]
+    actor_token1 = utils.get_random_actor_token()
+    actor_token2 = utils.get_random_actor_token() # make sure they aren't the same?
+    rating_token = round(utils.random.random() * 6 + 4, 1)
+    d = utils.run_sql_file(db,
+                           "sqls/which_of_actors_x_y_played_in_movie_with_rating_more_than_z.sql",
+                           actor_token1=actor_token1,
+                           actor_token2=actor_token2,
+						   rating_token=rating_token)
+    return {
+        "question": d[-1],
+        "answer": d[options.pop(int(d[-2]))],
+        "img": None,
+        "option1": d[options.pop()],
+        "option2": d[options.pop()],
+        "option3": d[options.pop()],
+    }
+
 def num_of_actors_from_gender_x_who_played_in_lead_roles_in_movie_y(db):
     options = [0, 1, 2, 3]
     movies_token = utils.get_random_movie_token()

@@ -2,9 +2,9 @@ SELECT
     CONCAT("What is the movie genre that actor ",actors.name, "is most identified with?") as question,
     genres.name AS answer,
     actors.profile_path as img,
-    (SELECT genres.name FROM genres WHERE genres.rnd_token = {genre_token1}) as option1,
-    (SELECT genres.name FROM genres WHERE genres.rnd_token = {genre_token2}) as option2,
-    (SELECT genres.name FROM genres WHERE genres.rnd_token = {genre_token3}) as option3
+    (SELECT a.name FROM genres as a WHERE a.rnd_token = MOD(genres.rnd_token + 1, (SELECT count(*) FROM genres))) as option1,
+    (SELECT a.name FROM genres as a WHERE a.rnd_token = MOD(genres.rnd_token + 2, (SELECT count(*) FROM genres))) as option2,
+    (SELECT a.name FROM genres as a WHERE a.rnd_token = MOD(genres.rnd_token + 3, (SELECT count(*) FROM genres))) as option3
 FROM
 	actors, genres, movie_actors, movie_genres
 WHERE

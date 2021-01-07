@@ -18,11 +18,9 @@ def movie_from_genre_x_where_y_played_for_the_first_time(db):
 
 
 def genre_which_actor_x_is_most_identified_with(db):
+    genres_tokens = get_random_genre_tokens_list
     d = utils.run_sql_file(db,
                            "sqls/genre_which_actor_x_is_most_identified_with.sql",
-                           genre_token1=utils.get_random_genre_token(),
-                           genre_token2=utils.get_random_genre_token(),
-                           genre_token3=utils.get_random_genre_token(),
                            actor_token=utils.get_random_actor_token())
     return {
         "question": d[0],
@@ -87,4 +85,3 @@ def num_of_actors_from_gender_x_who_played_in_lead_roles_in_movie_y(db):
         }
     else:
         return num_of_actors_from_gender_x_who_played_in_lead_roles_in_movie_y(db)
-

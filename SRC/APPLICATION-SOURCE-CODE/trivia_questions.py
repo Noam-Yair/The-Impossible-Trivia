@@ -85,3 +85,19 @@ def num_of_actors_from_gender_x_who_played_in_lead_roles_in_movie_y(db):
         }
     else:
         return num_of_actors_from_gender_x_who_played_in_lead_roles_in_movie_y(db)
+
+def in_which_movie_does_the_actor_of_the_character_played_first(db):
+    d = utils.run_sql_file(db,
+                           "sqls/in_which_movie_does_the_actor_of_the_character_played_first.sql",
+                           movie_token=utils.get_random_movie_token(),
+                           movie_token1=utils.get_random_movie_token(),
+                           movie_token2=utils.get_random_movie_token(),
+                           movie_token3=utils.get_random_movie_token())
+    return {
+            "question": d[0],
+            "answer": d[2],
+            "img": d[3],
+            "option1": d[4],
+            "option2": d[5],
+            "option3": d[6],
+        }

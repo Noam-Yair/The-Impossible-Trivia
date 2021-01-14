@@ -1,15 +1,29 @@
 <html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</head>
     <head>
-	<title>The impossible trivia</title>
-        <link rel="stylesheet" href="{{url_for('static', filename='style.css')}}">
-    </head>
+         <link rel="stylesheet" href="{{url_for('static', filename='style.css')}}">
+        <link href='https://fonts.googleapis.com/css?family=Acme|Signika' rel='stylesheet' type='text/css'>
+	<title>The Impossible Trivia</title>
     <body>
 	<div>{{questions_count}} out of {{trivia_questions_count}}</div>
-	<h1>The Impossible Trivia - <span class="score">Score: {{score}}</span></h1>
+    <div class="container-fluid">
+	<img src="/static/headline-logo.jpeg" alt="The Impossible Trivia" style="width:50%;height:20%;">
+    </div>
+     <span class="score">Score: {{score}}</span>
         <h3 style="color: {{message_color}}">{{message}}</h3>
 	<form action="/" method="post">
 		<table>
-			<tr><th>{{question}}</th><th>Need help?</th></tr>
+        <div class="col-md-12">
+			<tr><th class="question">{{question}}</th><th class="help_btn">
+                <button type="button" class="btn btn-outline-secondary btn-lg" onclick="showElement()">Need help?</button></th></tr>
+        </div>
 			<tr>
 				<td>
 				<table>
@@ -33,10 +47,15 @@
 				</table>
 				</td>
 				<td height="500px">
-					<iframe src="/help"></iframe>
+					<iframe id="help" src="/help"></iframe>
 				</td>
 			</tr>
 		</table>
 	</form>
+<script>
+    function showElement() {
+        document.getElementById("help").style.display = "block";
+    }
+</script>
     </body>
 </html>

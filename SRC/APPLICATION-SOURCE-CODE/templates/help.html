@@ -1,32 +1,33 @@
-<html>
-    <head>
-        <link rel="stylesheet" href="{{url_for('static', filename='style.css')}}">
-    </head>
-    <body>
-	<form method="post" action="">
-	    <table>
-	    <tr><td>Query:</td><td><input type="text" name="query" /></td></tr>
-	    <tr><td colspan="2"><input type="submit" class="help_btn" name="help" value="I need help" /></td><td></tr>
-	    </table>
-	</form>
-	{% if query %}
-	<p>Results for query: <strong>{{query}}</strong></p>
-	{% if not(movies) and not(actors) %}
-	<p style="color: red">no results found</p>
-	{% endif %}
-	<table class="help_table">
-	{% if movies %}
-		<tr><th>movies with lines matching query</th></tr>
-        {% for movie in movies %}
-		<tr><td>{{movie}}</td></tr>
-        {% endfor %}
-	{% endif %}
-	{% if actors %}
-		<tr><th>actors in movies with overview matching query</th></tr>
-        {% for actor in actors %}
-		<tr><td>{{actor}}</td></tr>
-        {% endfor %}
-	{% endif %}
-	{% endif %}
+<head>
+    <link rel="stylesheet" href="{{url_for('static', filename='style.css')}}">
+</head>
+<body>
+    <form method="post" action="">
+        <table>
+            <tr><td>Search:</td><td><input type="text" name="query" /></td></tr>
+            <tr><td colspan="2"><input type="submit" class="help_btn" name="help" value="I need help"/></td><td></tr>
+        </table>
+    </form>
+    <p>You can search an actor/actress name or a movie title</p>
+    {% if query %}
+        <p>Results for query: <strong>{{query}}</strong></p>
+        {% if not(movies) and not(actors) %}
+            <p style="color: red">no results found</p>
+        {% endif %}
+        <table class="help_table">
+        {% if movies %}
+            <tr><th>movies with lines matching query</th></tr>
+            {% for movie in movies %}
+                <tr><td>{{movie}}</td></tr>
+            {% endfor %}
+        {% endif %}
+        {% if actors %}
+            <tr><th>actors in movies with overview matching query</th></tr>
+            {% for actor in actors %}
+                <tr><td>{{actor}}</td></tr>
+            {% endfor %}
+        {% endif %}
+    {% endif %}
+    </table>
     </body>
 </html>

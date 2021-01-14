@@ -1,5 +1,9 @@
-body {
+@import url("https://fonts.googleapis.com/css?family=Montserrat&display=swap");
+
+
+body{
     text-align: center;
+    font-family: Signika, sans-serif;
 }
 
 table, td, tr {
@@ -12,14 +16,45 @@ th {
     text-align: center;
     margin-left: auto;
     margin-right: auto;
-    padding-top: 10px;
-    width: 300px;
+    padding-top: -20px;
+    width: 100%;
     border-bottom: 1px solid black
 }
 
+.question{
+    font-size: 25px;
+}
 .question_btn {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    background: #f3f0f1;
     width: 300px;
-    height: 100px;
+    height: 75px;
+    background: #f3f0f1;
+    position: relative;
+    margin-bottom: 25px;
+    border-radius: 32px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.1s ease-in-out;
+}
+
+.question_btn:nth-child(1) {
+    box-shadow: -6px -6px 10px rgba(255, 255, 255, 0.8),
+    6px 6px 10px rgba(0, 0, 0, 0.2);
+    color: #2c1b95;
+}
+
+.question_btn:hover {
+    opacity: 0.3;
+    box-shadow: -6px -6px 10px rgba(255, 255, 255, 0.8),
+      6px 6px 10px rgba(0, 0, 0, 0.2);
+}
+
+button.btn.btn-outline-secondary.btn-lg {
+    font-family: Signika, sans-serif;;
 }
 
 .help_btn {
@@ -27,7 +62,10 @@ th {
 }
 
 .score {
-    color: orange;
+    color: #2c1b95;
+    font-size: 150%;
+    padding-top: -20px;
+
 }
 
 iframe {

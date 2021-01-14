@@ -43,11 +43,15 @@ def randomly_select_question(db):
     random.shuffle(options)
     return question_data["question"], question_data["answer"], question_data["img"], options
 
+
 @app.route('/help', methods=['GET', 'POST'])
 def help():
     movies, actors = [], []
     db = connect_to_db()
-    if request.method == "POST":
+    query = request.form.get("query")
+    if query and len(query) == 0:
+        query = None
+    if request.method == "POST" and query:
         res = utils.run_sql_file_fetchall(db, "sqls/full_text_search.sql", query=request.form.get("query"))
         for row in res:
             if row[0] == "movie":
@@ -55,8 +59,8 @@ def help():
             else:
                 actors.append(row[1])
     db.close()
-    
-    return render_template('help.html', movies=movies, actors=actors, query=request.form.get("query"))
+
+    return render_template('help.html', movies=movies, actors=actors, query=query)
 
 @app.route('/', methods=['GET', 'POST'])
 def index():
@@ -78,7 +82,9 @@ def index():
             score += WRONG_ANSWER_POINTS
     question, answer, img, options = randomly_select_question(db)
     db.close()
-    return render_template('index.html', question=question, img=img, options=options, score=score, questions_count=questions_count, message=message, message_color=message_color, trivia_questions_count=TRIVIA_QUESTIONS_COUNT)
+    return render_template('index.html', question=question, img=img, options=options, score=score,
+                           questions_count=questions_count, message=message, message_color=message_color,
+                           trivia_questions_count=TRIVIA_QUESTIONS_COUNT)
 
 
 if __name__ == '__main__':

@@ -7,7 +7,7 @@ SELECT "Neither" AS option0,
 FROM actors
 WHERE (actors.rnd_token = {actor_token1} OR actors.rnd_token = {actor_token2}) AND
 	  EXISTS (SELECT movies.vote_average
-			  FROM movie_actors, movies
-			  WHERE actors.id = movie_actors.actor_id AND movies.id = movie_actors.movie_id
+			  FROM movie_actors JOIN movies ON movies.id = movie_actors.movie_id
+			  WHERE actors.id = movie_actors.actor_id
 					AND vote_average > {rating_token}
 			 )

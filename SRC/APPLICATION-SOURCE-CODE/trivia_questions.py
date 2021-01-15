@@ -49,8 +49,10 @@ def avg_movie_runtime(db):
 def which_of_actors_x_y_played_in_movie_with_rating_more_than_z(db):
     options = [0, 1, 2, 3]
     actor_token1 = utils.get_random_actor_token()
-    actor_token2 = utils.get_random_actor_token() # make sure they aren't the same?
-    rating_token = round(utils.random.random() * 6 + 4, 1)
+    actor_token2 = utils.get_random_actor_token()
+    if actor_token1 == actor_token2:
+        actor_token2 = (actor_token2 + 1) % utils.NUMBER_OF_ACTORS_IN_DB
+    rating_token = round(utils.random.random() * 5.5 + 4, 1)
     d = utils.run_sql_file(db,
                            "sqls/which_of_actors_x_y_played_in_movie_with_rating_more_than_z.sql",
                            actor_token1=actor_token1,

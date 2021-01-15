@@ -68,10 +68,12 @@ button.btn.btn-outline-secondary.btn-lg {
 
 }
 
+#help{
+    display: none;
+}
+
 iframe {
     border: 0px;
     height: 100%;
 }
 
-.help_table {
-}

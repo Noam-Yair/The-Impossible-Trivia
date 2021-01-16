@@ -68,8 +68,6 @@ def index():
     message = ""
     score = int(request.form.get("score", 0))
     questions_count = int(request.form.get("questions_count", 0)) + 1
-    if questions_count >= TRIVIA_QUESTIONS_COUNT:
-        return render_template("done.html", score=score)
     message_color = "black"
     if request.method == "POST":
         if "right" in request.form:
@@ -82,6 +80,9 @@ def index():
             score += WRONG_ANSWER_POINTS
     question, answer, img, options = randomly_select_question(db)
     db.close()
+    if questions_count >= TRIVIA_QUESTIONS_COUNT:
+        # Answered all questions, End trivia
+        return render_template("done.html", score=score)
     return render_template('index.html', question=question, img=img, options=options, score=score,
                            questions_count=questions_count, message=message, message_color=message_color,
                            trivia_questions_count=TRIVIA_QUESTIONS_COUNT)
